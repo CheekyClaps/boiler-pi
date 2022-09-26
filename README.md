@@ -1,3 +1,3 @@
 # boiler-pi
 
-raspberry-pi flask webserver
+raspberry-pi python flask sqlite webserver
