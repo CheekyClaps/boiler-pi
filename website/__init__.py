@@ -8,7 +8,10 @@ def create_app():
         ##DATABASE=os.path.join(app.instance_path, 'website.sqlite'),
     )
     
-    from .views import views
-    app.register_blueprint(views, url_prefix="/")
+    from .views import bp
+    app.register_blueprint(bp, url_prefix="/")
+
+    from .api import bp
+    app.register_blueprint(bp, url_prefix="/api")
 
     return app
