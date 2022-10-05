@@ -1,4 +1,149 @@
 {% extends "base.html" %}
-{% block title %} index.. {% endblock %}
-{% block body%} body.. {% endblock %}
-{% block scripts%} scripts.. {% endblock %}
+{% block title %} bootstrap chart {% endblock %}
+{% block stylesheets %}
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" rel="stylesheet">
+{% endblock %}
+{% block body %}
+	<div class="container">
+		<div class="row">
+			<div class="col-12">
+            			<div class="card">
+                			<div class="card-body">
+                    				<canvas id="canvas"></canvas>
+                			</div>
+            			</div>
+        		</div>
+		</div>
+	</div>
+{% endblock %}
+{% block scripts %}
+<!--suppress JSUnresolvedLibraryURL -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<!--suppress JSUnresolvedLibraryURL -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<!--suppress JSUnresolvedLibraryURL -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+<script>
+    $(document).ready(function () {
+
+	const datasets = [{
+                    label: 'Temperature',
+		    backgroundColor: 'blue',
+                    borderColor: 'blue',
+                    data: [],
+                    fill: false,
+                },{
+                    label: 'Target temperature',
+		    backgroundColor: 'red',
+                    borderColor: 'red',
+                    data: [],
+                    fill: false,
+		},{
+                    label: 'Pressure',
+		    backgroundColor: 'green',
+                    borderColor: 'green',
+                    data: [],
+                    fill: false,
+		},{
+                    label: 'Element',
+		    backgroundColor: 'orange',
+                    borderColor: 'orange',
+                    data: [],
+                    fill: false,
+		}]
+	
+ 	const options = {
+                responsive: true,
+                title: {
+                    display: true,
+                    text: 'Real-Time boiler status Chart'
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Time'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Value'
+                        }
+                    }]
+                }
+            }
+	
+        const config = {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: datasets,
+            },
+            options: options,
+        };
+
+        const context = document.getElementById('canvas').getContext('2d');
+        const lineChart = new Chart(context, config);
+	
+	// CURRENT TEMPERATURE - in the lead!
+	// current temperature sensor source
+	const source_temperature_sensor = new EventSource("/api/temperature");
+        source_temperature_sensor.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+	// only current temp may be able to shift dataset
+            if (config.data.labels.length === 20) {
+                config.data.labels.shift();
+                config.data.datasets[0].data.shift();
+		config.data.datasets[1].data.shift();
+		config.data.datasets[2].data.shift();
+                config.data.datasets[3].data.shift();
+            }
+	
+	// only current temp may be able to push time
+            config.data.labels.push(data.time);
+	    config.data.datasets[0].data.push(data.value);
+            lineChart.update();
+        }
+
+	// TARGET TEMPERATURE
+	// target temperature source
+	const source_target_temperature = new EventSource("/api/target-temperature");
+	source_target_temperature.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+	    config.data.datasets[1].data.push(data.value);
+            lineChart.update();
+        }
+	
+	// PRESSURE
+	// pressure sensor source
+	const source_pressure = new EventSource("/api/pressure");
+	source_pressure.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+	    config.data.datasets[2].data.push(data.value);
+            lineChart.update();
+        }
+
+	// ELEMENT STATUS
+	// ELEMTENT STATUS source
+	const source_element_status = new EventSource("/api/element-status");
+	source_element_status.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+	    config.data.datasets[3].data.push(data.value);
+            lineChart.update();
+        }
+
+    });
+</script>
+{% endblock %}
