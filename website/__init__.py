@@ -1,23 +1,25 @@
 from os import path
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy# as db
 
-# Init SQL Alchemy
+# Init SQL Alchemy class
 db = SQLAlchemy()
-db_name = "database.db"
 
 def create_app():
     app = Flask(__name__)
     app.config.from_mapping(
         SECRET_KEY='sukkel', # Make this gen base64 ?
-        SQLALCHEMY_DATABASE_URI="sqlite:///" + db_name,
-        #SQLALCHEMY_DATABASE_URI=path.join(app.instance_path, 'website.' + db_name),
+        SQLALCHEMY_DATABASE_URI = 'sqlite:///db.sqlite3',
+        SQLALCHEMY_TRACK_MODIFICATIONS = False
     )
     
-    # Init DB
-    db.init_app(app)
+    # Init SQL Alchemy app
+    db.init_app(app)    
+
+    # init DB file
     from .models import Boiler_temp, Safety_caveats
-    create_db(app)
+    with app.app_context():
+        db.create_all()
 
     # Init routes
     from .views import bp
@@ -27,9 +29,3 @@ def create_app():
     app.register_blueprint(bp, url_prefix="/api")
 
     return app
-
-# Create if not exists database file .db
-def create_db(app):
-    if not path.exists("website/" + db_name):
-        db.create_all(app=app)
-        print("DB CREATED")
