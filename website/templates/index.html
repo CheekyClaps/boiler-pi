@@ -35,7 +35,7 @@
     $(document).ready(function () {
 
 	const datasets = [{
-                    label: 'Temperature',
+                    label: 'Boiler temperature',
 		    backgroundColor: 'blue',
                     borderColor: 'blue',
                     data: [],
@@ -47,19 +47,19 @@
                     data: [],
                     fill: false,
 		},{
-                    label: 'Pressure',
+                    label: 'Boiler pressure',
 		    backgroundColor: 'green',
                     borderColor: 'green',
                     data: [],
                     fill: false,
 		},{
-                    label: 'Element',
+                    label: 'Element status',
 		    backgroundColor: 'orange',
                     borderColor: 'orange',
                     data: [],
                     fill: false,
 		}]
-	
+
  	const options = {
                 responsive: true,
                 title: {
@@ -91,7 +91,7 @@
                     }]
                 }
             }
-	
+
         const config = {
             type: 'line',
             data: {
@@ -103,54 +103,58 @@
 
         const context = document.getElementById('canvas').getContext('2d');
         const lineChart = new Chart(context, config);
-	
-	// CURRENT TEMPERATURE - in the lead!
-	// current temperature sensor source
-	const source_temperature_sensor = new EventSource("/api/temperature");
-        source_temperature_sensor.onmessage = function (event) {
-            const data = JSON.parse(event.data);
-	// only current temp may be able to shift dataset
+
+
+// Chart data
+var getData = function($config, $lineChart) {
+// Boiler temp
+$.ajax({
+    url: 'http://localhost/api/boiler-temperature/get',
+    success: function(json) {
+
             if (config.data.labels.length === 20) {
                 config.data.labels.shift();
                 config.data.datasets[0].data.shift();
-		config.data.datasets[1].data.shift();
-		config.data.datasets[2].data.shift();
+								config.data.datasets[1].data.shift();
+								config.data.datasets[2].data.shift();
                 config.data.datasets[3].data.shift();
             }
-	
-	// only current temp may be able to push time
-            config.data.labels.push(data.time);
-	    config.data.datasets[0].data.push(data.value);
-            lineChart.update();
-        }
 
-	// TARGET TEMPERATURE
-	// target temperature source
-	const source_target_temperature = new EventSource("/api/target-temperature");
-	source_target_temperature.onmessage = function (event) {
-            const data = JSON.parse(event.data);
-	    config.data.datasets[1].data.push(data.value);
-            lineChart.update();
-        }
-	
-	// PRESSURE
-	// pressure sensor source
-	const source_pressure = new EventSource("/api/pressure");
-	source_pressure.onmessage = function (event) {
-            const data = JSON.parse(event.data);
-	    config.data.datasets[2].data.push(data.value);
-            lineChart.update();
-        }
+	    			// only current temp may be able to push time
+						config.data.labels.push(json.data.time);
+	   				config.data.datasets[0].data.push(json.data.value);
+    }
+  });
 
-	// ELEMENT STATUS
-	// ELEMTENT STATUS source
-	const source_element_status = new EventSource("/api/element-status");
-	source_element_status.onmessage = function (event) {
-            const data = JSON.parse(event.data);
-	    config.data.datasets[3].data.push(data.value);
-            lineChart.update();
-        }
+// Target temp
+$.ajax({
+    url: 'http://localhost/api/target-temperature/get',
+    success: function(json) {
+	    config.data.datasets[1].data.push(json.data.value);
+    }
+  });
 
-    });
+	// Boiler pressure
+	$.ajax({
+	    url: 'http://localhost/api/boiler-pressure/get',
+	    success: function(json) {
+		    config.data.datasets[2].data.push(json.data.value);
+	    }
+	  });
+
+		// Element status
+		$.ajax({
+				url: 'http://localhost/api/element-status/get',
+				success: function(json) {
+					config.data.datasets[3].data.push(json.data.value);
+				}
+			});
+
+ lineChart.update();
+};
+
+// get new data every 3 seconds
+setInterval(getData, 3000);
+});
 </script>
 {% endblock %}

@@ -17,7 +17,7 @@ def create_app():
     db.init_app(app)    
 
     # init DB file
-    from .models import Boiler_temp, Safety_caveats
+    from .models import Target_temp, Safety_caveats
     with app.app_context():
         db.create_all()
 
@@ -27,5 +27,7 @@ def create_app():
 
     from .api import bp
     app.register_blueprint(bp, url_prefix="/api")
+
+
 
     return app
