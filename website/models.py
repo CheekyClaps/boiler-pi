@@ -1,6 +1,4 @@
 from . import db
-#from flask_sqlalchemy import SQLAlchemy
-
 
 class Target_temp(db.Model):
     id = db.Column(db.Integer, primary_key=True)
