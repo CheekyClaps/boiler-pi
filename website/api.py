@@ -7,9 +7,9 @@ bp = Blueprint("api", __name__)
 
 @bp.route("/target-temperature/get", methods=["GET"])
 def get_target_temp():
-    # Get last set target temp by id
-    value = Target_temp.query.order_by(Target_temp.id.desc()).first()
-    return jsonify({'data': {'time': datetime.now().strftime('%H:%M:%S'), 'value': value.targettemp}})
+    from .DS18B20 import read_temp
+    value = read_temp.temp_c
+    return jsonify({'data': {'time': datetime.now().strftime('%H:%M:%S'), 'value': value}})
 
 @bp.route("/target-temperature/<int:target_temp>", methods=["GET"])
 def put_target_temp(target_temp):
