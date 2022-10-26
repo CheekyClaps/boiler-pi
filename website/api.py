@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, Response, stream_with_context
 from datetime import datetime
 from .models import Target_temp, Safety_caveats
+from .DS18B20 import DS18B20
 from . import db
 
 bp = Blueprint("api", __name__)
