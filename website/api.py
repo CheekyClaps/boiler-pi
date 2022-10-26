@@ -1,16 +1,15 @@
-from flask import Blueprint, jsonify, Response, stream_with_context
+from flask import Blueprint, jsonify, Response
+from w1thermsensor import W1ThermSensor
 from datetime import datetime
 from .models import Target_temp, Safety_caveats
-from .DS18B20 import DS18B20
 from . import db
 
 bp = Blueprint("api", __name__)
+thermsensor = W1ThermSensor()
 
 @bp.route("/target-temperature/get", methods=["GET"])
 def get_target_temp():
-    from .DS18B20 import read_temp
-    value = read_temp.temp_c
-    return jsonify({'data': {'time': datetime.now().strftime('%H:%M:%S'), 'value': value}})
+    return jsonify({'data': {'time': datetime.now().strftime('%H:%M:%S'), 'value': thermsensor.get_temperature()}})
 
 @bp.route("/target-temperature/<int:target_temp>", methods=["GET"])
 def put_target_temp(target_temp):
