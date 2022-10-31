@@ -109,7 +109,7 @@
 var getData = function($config, $lineChart) {
 // Boiler temp
 $.ajax({
-    url: 'http://localhost/api/boiler-temperature/get',
+	url: 'http://{{server_ip}}/api/boiler-temperature/get',
     success: function(json) {
 
             if (config.data.labels.length === 20) {
@@ -128,7 +128,7 @@ $.ajax({
 
 // Target temp
 $.ajax({
-    url: 'http://localhost/api/target-temperature/get',
+    url: 'http://{{server_ip}}/api/target-temperature/get',
     success: function(json) {
 	    config.data.datasets[1].data.push(json.data.value);
     }
@@ -136,7 +136,7 @@ $.ajax({
 
 	// Boiler pressure
 	$.ajax({
-	    url: 'http://localhost/api/boiler-pressure/get',
+	    url: 'http://{{server_ip}}/api/boiler-pressure/get',
 	    success: function(json) {
 		    config.data.datasets[2].data.push(json.data.value);
 	    }
@@ -144,7 +144,7 @@ $.ajax({
 
 		// Element status
 		$.ajax({
-				url: 'http://localhost/api/element-status/get',
+			url: 'http://{{server_ip}}/api/element-status/get',
 				success: function(json) {
 					config.data.datasets[3].data.push(json.data.value);
 				}
