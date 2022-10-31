@@ -1,5 +1,6 @@
 from flask import Blueprint, flash, render_template, request
 from .models import Target_temp, Safety_caveats
+import socket
 from . import db
 
 bp = Blueprint("views", __name__)
@@ -14,7 +15,8 @@ def index():
     elif new_target_temperature:
         print(new_target_temperature)
 
-    return render_template("index.html", server_ip=request.environ)
+    return render_template("index.html", server_ip=socket.gethostbyname(socket.gethostname()
+))
 
 @bp.route("/chart")
 def chart():
