@@ -7,7 +7,8 @@ from . import db
 bp = Blueprint("views", __name__)
 
 # Get server ip for api calls
-server_ip = subprocess.Popen("ipconfig getifaddr en0", shell=True,stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
+# server_ip = subprocess.Popen("ipconfig getifaddr en0", shell=True,stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
+server_ip = subprocess.Popen("hostname -I", shell=True,stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
 
 @bp.route("/", methods=['GET', 'POST'])
 def index(ip=server_ip):
