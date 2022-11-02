@@ -1,7 +1,6 @@
 from os import path
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy# as db
-from flask_cors import CORS
 
 # Init SQL Alchemy class
 db = SQLAlchemy()
@@ -14,9 +13,6 @@ def create_app():
         SQLALCHEMY_TRACK_MODIFICATIONS = False
     )
 
-    # cross origin requests
-    CORS(app)
-    
     # Init SQL Alchemy app
     db.init_app(app)    
 
@@ -31,7 +27,5 @@ def create_app():
 
     from .api import bp
     app.register_blueprint(bp, url_prefix="/api")
-
-
 
     return app

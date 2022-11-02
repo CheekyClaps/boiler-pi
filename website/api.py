@@ -1,17 +1,21 @@
 from flask import Blueprint, jsonify, Response
+from flask_cors import cross_origin
 from w1thermsensor import W1ThermSensor
 from datetime import datetime
 from .models import Target_temp, Safety_caveats
 from . import db
 
+# Init flask blueprint, one wire thermsensor
 bp = Blueprint("api", __name__)
 thermsensor = W1ThermSensor()
 
 @bp.route("/target-temperature/get", methods=["GET"])
+@cross_origin()
 def get_target_temp():
-    return jsonify({'data': {'time': datetime.now().strftime('%H:%M:%S'), 'value': thermsensor.get_temperature()}})
+    return jsonify({'data': {'time': datetime.now().strftime('%H:%M:%S'), 'value': 60 }})
 
 @bp.route("/target-temperature/<int:target_temp>", methods=["GET"])
+@cross_origin()
 def put_target_temp(target_temp):
     # Get safety caveats by id
     safety = Safety_caveats.query.get(1)
@@ -38,13 +42,16 @@ def init_target_temp():
     return " ", 200
 
 @bp.route("/boiler-temperature/get", methods=["GET"])
+@cross_origin()
 def get_boiler_temp():
-    return jsonify({'data': {'time': datetime.now().strftime('%H:%M:%S'), 'value': 38}})
+    return jsonify({'data': {'time': datetime.now().strftime('%H:%M:%S'), 'value': thermsensor.get_temperature()}})
 
 @bp.route("/boiler-pressure/get", methods=["GET"])
+@cross_origin()
 def pressure():
-    return jsonify({'data': {'time': datetime.now().strftime('%H:%M:%S'), 'value': 40}})
+    return jsonify({'data': {'time': datetime.now().strftime('%H:%M:%S'), 'value': 60}})
 
 @bp.route("/element-status/get", methods=["GET"])
+@cross_origin()
 def element():
     return jsonify({'data': {'time': datetime.now().strftime('%H:%M:%S'), 'value': 100}})
