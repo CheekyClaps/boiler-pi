@@ -12,13 +12,15 @@ thermsensor = W1ThermSensor()
 @bp.route("/target-temperature/get", methods=["GET"])
 @cross_origin()
 def get_target_temp():
-    return jsonify({'data': {'time': datetime.now().strftime('%H:%M:%S'), 'value': 60 }})
+    value = Target_temp.query.order_by(Target_temp.id.desc()).first()
+    return jsonify({'data': {'time': datetime.now().strftime('%H:%M:%S'), 'value': value.targettemp}})
 
 @bp.route("/target-temperature/<int:target_temp>", methods=["GET"])
 @cross_origin()
 def put_target_temp(target_temp):
     # Get safety caveats by id
     safety = Safety_caveats.query.get(1)
+    print(safety)
     if target_temp > safety.mintemp and target_temp < safety.maxtemp:
         new_target_temp = Target_temp(targettemp=target_temp)
         db.session.merge(new_target_temp)
