@@ -4,6 +4,7 @@ from w1thermsensor import W1ThermSensor
 from datetime import datetime
 from .models import Target_temp, Safety_caveats
 from . import db
+import subprocess
 
 # Init flask blueprint, one wire thermsensor
 bp = Blueprint("api", __name__)
@@ -57,3 +58,9 @@ def pressure():
 @cross_origin()
 def element():
     return jsonify({'data': {'time': datetime.now().strftime('%H:%M:%S'), 'value': 100}})
+
+@bp.route("/timer", methods=["GET"])
+@cross_origin()
+def timer():
+   result = subprocess.check_output("python controller/timer.py", shell=True)
+   return render_template("index.html")
