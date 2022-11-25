@@ -25,3 +25,11 @@ def index(ip=server_ip):
 @bp.route("/chart")
 def chart():
     return render_template("chart.html")
+
+@bp.route("/timer", methods=["GET"])
+def timer():
+    try:
+        output = subprocess.check_output("python3 website/controller/timer.py", shell=True)
+    except subprocess.CalledProcessError as e:
+        output = e.output
+    return render_template("index.html", **locals())

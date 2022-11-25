@@ -58,9 +58,3 @@ def pressure():
 @cross_origin()
 def element():
     return jsonify({'data': {'time': datetime.now().strftime('%H:%M:%S'), 'value': 100}})
-
-@bp.route("/timer", methods=["GET"])
-@cross_origin()
-def timer():
-   result = subprocess.check_output("python controller/timer.py", shell=True)
-   return render_template("index.html")
