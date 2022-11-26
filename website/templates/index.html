@@ -19,15 +19,11 @@
 	<form method="POST">
   		<div class="mb-3">
     			<input type="number" id="target_temperature" name="target_temperature" class="form-control" min="0" max="100" placeholder="Target temperature">
+			<p>OR</p>
+			<input type="number" id="heating_time" name="heating_time" class="form-control" min="0" max="3600" placeholder="time to heat in seconds">
 		</div>
   		<button type="submit" class="btn btn-primary">Submit</button>
 	</form>
-
-        <form method="GET" action="/timer">
-                <input type="submit" value="timer" name="timer"/>
-        </form>
-
-
       	<div class="">
 		<p>form, uptime, errors, set maximum temp</p>
 	</div>

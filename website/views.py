@@ -12,7 +12,16 @@ server_ip = subprocess.Popen("hostname -I", shell=True,stdout=subprocess.PIPE).c
 
 @bp.route("/", methods=['GET', 'POST'])
 def index(ip=server_ip):
+
     new_target_temperature = request.form.get("target_temperature")
+    new_heating_time = request.form.get("heating_time")
+ 
+    if new_heating_time and new_heating_time > '0' and new_target_temperature:
+        flash("Cannot set both!", category='danger')
+
+    if new_heating_time and new_heating_time > '0':
+        print(new_heating_time)
+
     if new_target_temperature and new_target_temperature >= '90':
         flash(new_target_temperature + " is too high!", category='danger')
     elif new_target_temperature and new_target_temperature <= '18':
