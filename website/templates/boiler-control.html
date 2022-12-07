@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %} boiler - control {% endblock %}
+{% block stylesheets %}{% endblock %}
+{% block main %}
+	<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+		<div class="chartjs-size-monitor">
+		    	<div class="chartjs-size-monitor-expand">
+			    	<div class=""></div>
+		    	</div>
+		    	<div class="chartjs-size-monitor-shrink">
+			    	<div class=""></div>
+		    	</div>
+	    	</div>
+		<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        	<h1 class="h2">Boiler control</h1>
+      	</div>
+
+	<form method="POST">
+  		<div class="mb-3">
+    			<input type="number" id="target_temperature" name="target_temperature" class="form-control" min="0" max="100" placeholder="Target temperature">
+			<p>OR</p>
+			<input type="number" id="heating_time" name="heating_time" class="form-control" min="0" max="3600" placeholder="time to heat in seconds">
+		</div>
+  		<button type="submit" class="btn btn-primary">Submit</button>
+	</form>
+      	<div class="">
+		<p>form, uptime, errors, set maximum temp</p>
+	</div>
+
+    </main>
+{% endblock %}
+{% block scripts %}
+<!--suppress JSUnresolvedLibraryURL -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+<script>
+
+// Chart data
+var getData = function($config, $lineChart) {
+// Boiler temp
+$.ajax({
+	url: 'http://{{server_ip}}/api/boiler-temperature/get',
+    success: function(json) {
+
+            if (config.data.labels.length === 20) {
+                config.data.labels.shift();
+                config.data.datasets[0].data.shift();
+		config.data.datasets[1].data.shift();
+		config.data.datasets[2].data.shift();
+                config.data.datasets[3].data.shift();
+            }
+
+	    	// only current temp may be able to push time
+		config.data.labels.push(json.data.time);
+	   	config.data.datasets[0].data.push(json.data.value);
+    }
+  });
+
+// Target temp
+$.ajax({
+    url: 'http://{{server_ip}}/api/target-temperature/get',
+    success: function(json) {
+	    config.data.datasets[1].data.push(json.data.value);
+    }
+  });
+
+// Boiler pressure
+	$.ajax({
+	url: 'http://{{server_ip}}/api/boiler-pressure/get',
+	    success: function(json) {
+	 	config.data.datasets[2].data.push(json.data.value);
+	    }
+	  });
+
+		// Element status
+		$.ajax({
+			url: 'http://{{server_ip}}/api/element-status/get',
+				success: function(json) {
+					config.data.datasets[3].data.push(json.data.value);
+				}
+			});
+
+ lineChart.update();
+};
+
+// get new data every 3 seconds
+setInterval(getData, 3000);
+});
+</script>
+{% endblock %}

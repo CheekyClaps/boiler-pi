@@ -2,9 +2,9 @@ from flask import Blueprint, jsonify, Response
 from flask_cors import cross_origin
 from w1thermsensor import W1ThermSensor
 from datetime import datetime
+import subprocess
 from .models import Target_temp, Safety_caveats
 from . import db
-import subprocess
 
 # Init flask blueprint, one wire thermsensor
 bp = Blueprint("api", __name__)
@@ -26,9 +26,9 @@ def put_target_temp(target_temp):
         new_target_temp = Target_temp(targettemp=target_temp)
         db.session.merge(new_target_temp)
         db.session.commit()
-        return " ", 200
+        return "index.html", 200
     else:
-        return " ", 500
+        return "index.html", 500
 
 @bp.route("/init", methods=["GET"])
 def init_target_temp():
@@ -58,3 +58,11 @@ def pressure():
 @cross_origin()
 def element():
     return jsonify({'data': {'time': datetime.now().strftime('%H:%M:%S'), 'value': 100}})
+
+@bp.route("/timer/<int:heating_time>", methods=["GET"])
+def timer(heating_time):
+    try:
+        output = subprocess.check_output("python3 website/controller/timer.py", shell=True)
+    except subprocess.CalledProcessError as e:
+        output = e.output
+    return render_template("index.html", **locals())

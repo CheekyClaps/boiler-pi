@@ -7,33 +7,30 @@ from . import db
 bp = Blueprint("views", __name__)
 
 # Get server ip for api calls
-# server_ip = subprocess.Popen("ipconfig getifaddr en0", shell=True,stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
-server_ip = subprocess.Popen("hostname -I", shell=True,stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
+server_ip = subprocess.Popen("sudo hostname -I", shell=True,stdout=subprocess.PIPE).communicate()[0].decode('utf-8').strip()
 
-@bp.route("/", methods=['GET', 'POST'])
+@bp.route("/", methods=['GET'])
 def index(ip=server_ip):
+    return render_template("index.html", server_ip=ip)
+
+@bp.route("/boiler-control", methods=['GET', 'POST'])
+def chart(ip=server_ip):
 
     new_target_temperature = request.form.get("target_temperature")
     new_heating_time = request.form.get("heating_time")
  
     if new_heating_time and new_heating_time > '0' and new_target_temperature:
         flash("Cannot set both!", category='danger')
-
-    if new_heating_time and new_heating_time > '0':
+    elif new_heating_time and new_heating_time > '0':
         print(new_heating_time)
-
-    if new_target_temperature and new_target_temperature >= '90':
+    elif new_target_temperature and new_target_temperature >= '90':
         flash(new_target_temperature + " is too high!", category='danger')
     elif new_target_temperature and new_target_temperature <= '18':
         flash(new_target_temperature + " is too low!", category='danger')
     elif new_target_temperature:
         print(new_target_temperature)
 
-    return render_template("index.html", server_ip=ip)
-
-@bp.route("/chart")
-def chart():
-    return render_template("chart.html")
+    return render_template("boiler-control.html", server_ip=ip)
 
 @bp.route("/timer", methods=["GET"])
 def timer():

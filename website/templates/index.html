@@ -15,18 +15,6 @@
         	<h1 class="h2">Dashboard</h1>
       	</div>
       	<canvas class="my-4 w-100 chartjs-render-monitor" id="canvas" style="display: block; height: 486px; width: 1152px;" width="2304" height="972"></canvas>
-
-	<form method="POST">
-  		<div class="mb-3">
-    			<input type="number" id="target_temperature" name="target_temperature" class="form-control" min="0" max="100" placeholder="Target temperature">
-			<p>OR</p>
-			<input type="number" id="heating_time" name="heating_time" class="form-control" min="0" max="3600" placeholder="time to heat in seconds">
-		</div>
-  		<button type="submit" class="btn btn-primary">Submit</button>
-	</form>
-      	<div class="">
-		<p>form, uptime, errors, set maximum temp</p>
-	</div>
     </main>
 {% endblock %}
 {% block scripts %}
