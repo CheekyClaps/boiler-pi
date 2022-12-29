@@ -6,9 +6,9 @@ ssr2 = 15
 led = 8
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(ssr1, GPIO.OUT, initial=GPIO.LOW))
-GPIO.setup(ssr2, GPIO.OUT, initial=GPIO.LOW))
-GPIO.setup(led, GPIO.OUT, initial=GPIO.LOW))
+GPIO.setup(ssr1, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(ssr2, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(led, GPIO.OUT, initial=GPIO.LOW)
 
 try:
     print("set GIOP high")

@@ -3,18 +3,12 @@
 {% block stylesheets %}{% endblock %}
 {% block main %}
 	<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-		<div class="chartjs-size-monitor">
-		    	<div class="chartjs-size-monitor-expand">
-			    	<div class=""></div>
-		    	</div>
-		    	<div class="chartjs-size-monitor-shrink">
-			    	<div class=""></div>
-		    	</div>
-	    	</div>
 		<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         	<h1 class="h2">Dashboard</h1>
       	</div>
-      	<canvas class="my-4 w-100 chartjs-render-monitor" id="canvas" style="display: block; height: 486px; width: 1152px;" width="2304" height="972"></canvas>
+	<div class="grid">
+		<canvas id="canvas"  style="min-height:350px"  class=""></canvas>
+	</div>
     </main>
 {% endblock %}
 {% block scripts %}
@@ -51,6 +45,7 @@
 
  	const options = {
                 responsive: true,
+		maintainAspectRatio: false,
                 title: {
                     display: true,
                     text: 'Real-Time boiler status Chart'
